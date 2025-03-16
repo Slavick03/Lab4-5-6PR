@@ -1,0 +1,47 @@
+name: CI/CD for ToDo List
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build-test-cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      - name: Build backend Docker image
+        run: |
+          docker build -t todo-backend ./backend
+
+      - name: Build frontend Docker image
+        run: |
+          docker build -t todo-frontend ./frontend
+
+      - name: Start application with Docker Compose
+        run: |
+          docker compose up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services to start..."
+          sleep 15
+
+      - name: Test backend API
+        run: |
+          curl -f http://localhost:3001/api/tasks || exit 1
+
+      - name: Test frontend
+        run: |
+          curl -f http://localhost:3000 || exit 1
+
+      - name: Stop and remove containers
+        run: |
+          docker compose down --volumes --remove-orphans

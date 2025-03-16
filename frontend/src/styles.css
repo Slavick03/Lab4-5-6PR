@@ -512,3 +512,78 @@ body {
   gap: 10px;
   flex-wrap: nowrap;
 }
+
+/* Стили для кнопки отправки email */
+.btn-email {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-email:hover {
+  background-color: #217dbb;
+}
+
+/* Поле ввода email */
+.email-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Сообщение об успешной отправке email */
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+/* Сообщение об ошибке при отправке email */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.email-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.email-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.btn-email {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-email:hover {
+  background-color: #217dbb;
+}
+
+.btn-email {
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem; /* Сделать размер одинаковым с остальными кнопками */
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.btn-email:hover {
+  background-color: #217dbb;
+}

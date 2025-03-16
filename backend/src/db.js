@@ -9,7 +9,6 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'tododb',
 });
 
-// Функция для создания таблицы, если её нет
 async function initializeDatabase() {
   const connection = await pool.getConnection();
   try {
@@ -29,7 +28,6 @@ async function initializeDatabase() {
   }
 }
 
-// Вызываем функцию при старте сервера
 initializeDatabase();
 
 module.exports = pool;
