@@ -20,17 +20,21 @@ jobs:
       - name: Build and Start Containers
         run: docker-compose up -d --build
 
-      - name: Wait for MySQL container to be ready (manual wait)
+      - name: Wait for MySQL to become ready (robust)
         run: |
-          echo "Waiting for MySQL to initialize..."
-          for i in {1..30}; do
-            if docker exec todo-mysql mysqladmin ping -h "localhost" -p123456 --silent; then
-              echo "MySQL is ready!"
-              break
+          echo "Waiting for MySQL service to be healthy..."
+          ATTEMPTS_LEFT=30
+          until docker exec todo-mysql mysqladmin ping -h localhost -p123456 --silent; do
+            if [ $ATTEMPTS_LEFT -eq 0 ]; then
+              echo "MySQL did not become healthy in time!"
+              docker-compose logs
+              exit 1
             fi
-            echo "MySQL is not ready yet... retry #$i"
+            echo "MySQL is not ready yet... waiting (attempts left: $ATTEMPTS_LEFT)"
+            ATTEMPTS_LEFT=$((ATTEMPTS_LEFT - 1))
             sleep 5
           done
+          echo "✅ MySQL is ready!"
 
       - name: Test backend API
         run: curl -f http://localhost:3001/api/tasks || exit 1
