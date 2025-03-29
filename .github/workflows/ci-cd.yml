@@ -1,4 +1,4 @@
-name: CI/CD for ToDo List (Frontend Only)
+name: CI/CD for ToDo List
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ['main']
 
 jobs:
-  build-and-test-frontend:
+  build-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,17 +17,26 @@ jobs:
       - name: Install Docker Compose
         run: sudo apt-get update && sudo apt-get install -y docker-compose
 
-      - name: Build frontend Docker image
-        run: docker build -t todo-frontend ./frontend
+      - name: Build and Start all services
+        run: docker-compose up -d --build
 
-      - name: Start frontend container
-        run: docker run -d -p 3000:3000 --name todo-frontend todo-frontend
-
-      - name: Wait for frontend to be ready
-        run: sleep 10
+      - name: Wait until backend is healthy
+        run: |
+          echo "⏳ Waiting for backend..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3001/api/tasks > /dev/null; then
+              echo "✅ Backend is ready"
+              exit 0
+            fi
+            echo "⏳ Waiting for backend ($i/30)..."
+            sleep 5
+          done
+          echo "❌ Backend did not become ready in time"
+          docker-compose logs
+          exit 1
 
       - name: Test frontend
         run: curl -f http://localhost:3000 || exit 1
 
-      - name: Stop frontend container
-        run: docker stop todo-frontend && docker rm todo-frontend
+      - name: Shutdown
+        run: docker-compose down --volumes --remove-orphans
