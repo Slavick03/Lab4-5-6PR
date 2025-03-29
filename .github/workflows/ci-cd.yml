@@ -7,36 +7,47 @@ on:
     branches: ['main']
 
 jobs:
-  build-test:
+  build-test-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build and Start all services
-        run: docker-compose up -d --build
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Wait until backend is healthy
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: vaseab/todo-backend:latest
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: vaseab/todo-frontend:latest
+
+      - name: Run Docker Compose for tests
         run: |
-          echo "⏳ Waiting for backend..."
-          for i in {1..30}; do
-            if curl -s http://localhost:3001/api/tasks > /dev/null; then
-              echo "✅ Backend is ready"
-              exit 0
-            fi
-            echo "⏳ Waiting for backend ($i/30)..."
-            sleep 5
-          done
-          echo "❌ Backend did not become ready in time"
-          docker-compose logs
-          exit 1
+          docker compose up -d
+          echo "Wait for containers to start..."
+          sleep 15
 
-      - name: Test frontend
+      - name: Test Backend API
+        run: curl -f http://localhost:3001/api/tasks || exit 1
+
+      - name: Test Frontend
         run: curl -f http://localhost:3000 || exit 1
 
-      - name: Shutdown
-        run: docker-compose down --volumes --remove-orphans
+      - name: Stop containers
+        run: docker compose down --volumes --remove-orphans
