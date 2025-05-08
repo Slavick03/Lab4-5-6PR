@@ -17,27 +17,29 @@ function TaskForm({ onAddTask }) {
       <h4 className="form-title">➕ Add New Task</h4>
 
       <div className="form-group">
-        <label>📌 Title</label>
+        <label>Title</label>
         <input
           className="form-input"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter task title"
+          type = "title"
         />
       </div>
 
       <div className="form-group">
-        <label>📝 Description</label>
+        <label>Description</label>
         <input
           className="form-input"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter task description"
+          type = "description"
         />
       </div>
 
       <button type="submit" className="btn-submit">
-        ✅ Add Task
+        Add Task
       </button>
     </form>
   );
