@@ -28,14 +28,14 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: vaseab/todo-backend:latest
+          tags: stepanovvlad/todo-backend:latest
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: true
-          tags: vaseab/todo-frontend:latest
+          tags: stepanovvlad/todo-frontend:latest
 
       - name: Run Docker Compose for tests
         run: |
